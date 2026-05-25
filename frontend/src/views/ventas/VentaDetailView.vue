@@ -127,12 +127,11 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 import { ventaService, type VentaDetalle } from '@/services/venta.service'
 import { useToast } from '@/composables/useToast'
 
 const route  = useRoute()
-const router = useRouter()
 const toast  = useToast()
 
 const venta          = ref<VentaDetalle | null>(null)
