@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: tellix-backend
+
+  datasource:
+    url: ${DB_URL:jdbc:sqlserver://localhost:1433;databaseName=TellixDB;encrypt=true;trustServerCertificate=true}
+    username: ${DB_USER:tellix_app}
+    password: ${DB_PASS:C4mbi4M3!Pr0nt0}
+    driver-class-name: com.microsoft.sqlserver.jdbc.SQLServerDriver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+      idle-timeout: 600000
+      pool-name: TellixPool
+
+  jdbc:
+    template:
+      fetch-size: -1
+
+  threads:
+    virtual:
+      enabled: true   # Virtual Threads — Java 21
+
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+tellix:
+  jwt:
+    secret: ${JWT_SECRET:t3ll1x-s3cr3t-k3y-d3b3-t3n3r-m1n1m0-256-b1ts-p4r4-HM4C}
+    expiration-ms: 28800000      # 8 horas
+    refresh-expiration-ms: 86400000  # 24 horas
+
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:5173,http://localhost:4173}
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui
+    operations-sorter: alpha
+
+logging:
+  level:
+    com.tellix: DEBUG
+    org.springframework.security: INFO
+    com.microsoft.sqlserver: WARN

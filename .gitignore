@@ -1,0 +1,79 @@
+# ============================================================
+#  TELLIX — .gitignore
+#  Monorepo: backend (Java/Maven) + frontend (Vue/Vite)
+# ============================================================
+
+# ── Credenciales y secretos ──────────────────────────────────
+.env
+.env.local
+.env.production
+*.key
+*.pem
+*.p12
+*.jks
+
+# ── Backend — Maven / Java ───────────────────────────────────
+backend/target/
+backend/*.class
+backend/*.jar
+backend/*.war
+backend/*.ear
+
+# Configuraciones con datos reales (usar .example como plantilla)
+backend/src/main/resources/application-dev.yml
+backend/src/main/resources/application-prod.yml
+
+# ── Frontend — Node / Vite ───────────────────────────────────
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/*.local
+
+# ── IDEs ─────────────────────────────────────────────────────
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# VS Code
+.vscode/
+!.vscode/extensions.json
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# NetBeans
+nbproject/
+
+# ── Sistema operativo ─────────────────────────────────────────
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# ── Logs ─────────────────────────────────────────────────────
+*.log
+logs/
+spring.log
+
+# ── Docker ───────────────────────────────────────────────────
+# No ignorar Dockerfile ni docker-compose.yml
+# Sí ignorar overrides con credenciales reales
+docker-compose.override.yml
+
+# ── Otros ────────────────────────────────────────────────────
+*.tmp
+*.bak
+*.swp
+.cache/
