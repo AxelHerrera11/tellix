@@ -29,13 +29,20 @@
         <span class="nav-label" v-show="ui.sidebarAbierto">Compras</span>
       </router-link>
 
-      <router-link
-        v-if="auth.tieneRol('ADMINISTRADOR','BODEGUERO')"
-        to="/inventario" class="nav-item" active-class="nav-item--active"
-      >
-        <span class="nav-icon">📊</span>
-        <span class="nav-label" v-show="ui.sidebarAbierto">Inventario</span>
-      </router-link>
+      <template v-if="auth.tieneRol('ADMINISTRADOR','BODEGUERO')">
+        <router-link to="/inventario" class="nav-item" active-class="nav-item--active">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label" v-show="ui.sidebarAbierto">Inventario</span>
+        </router-link>
+        <router-link to="/inventario/ajuste" class="nav-item nav-item--sub" active-class="nav-item--active">
+          <span class="nav-icon">⚖</span>
+          <span class="nav-label" v-show="ui.sidebarAbierto">Ajustes</span>
+        </router-link>
+        <router-link to="/inventario/movimientos" class="nav-item nav-item--sub" active-class="nav-item--active">
+          <span class="nav-icon">📋</span>
+          <span class="nav-label" v-show="ui.sidebarAbierto">Movimientos</span>
+        </router-link>
+      </template>
 
       <!-- CXC / CXP: Contador, Administrador -->
       <router-link
@@ -56,7 +63,7 @@
 
       <!-- Catálogos: todos -->
       <div class="nav-section" v-show="ui.sidebarAbierto">Catálogos</div>
-      <router-link to="/catalogos/productos"   class="nav-item nav-item--sub" active-class="nav-item--active">
+      <router-link v-if="auth.tieneRol('ADMINISTRADOR','VENDEDOR','CONTADOR')" to="/catalogos/productos" class="nav-item nav-item--sub" active-class="nav-item--active">
         <span class="nav-icon">🏷</span>
         <span class="nav-label" v-show="ui.sidebarAbierto">Productos</span>
       </router-link>

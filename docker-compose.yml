@@ -1,6 +1,18 @@
-version: "3.9"
-
 services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: tellix-sqlserver
+    restart: unless-stopped
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA:       "Y"
+      MSSQL_SA_PASSWORD: ${SA_PASSWORD}
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - tellix-net
+
   tellix-backend:
     build: ./backend
     container_name: tellix-backend
@@ -8,11 +20,13 @@ services:
     ports:
       - "8080:8080"
     environment:
-      DB_URL:      jdbc:sqlserver://host.docker.internal:1433;databaseName=TellixDB;encrypt=true;trustServerCertificate=true
-      DB_USER:     ${DB_USER}
-      DB_PASS:     ${DB_PASS}
-      JWT_SECRET:  ${JWT_SECRET}
+      DB_URL:       jdbc:sqlserver://sqlserver:1433;databaseName=TellixDB;encrypt=true;trustServerCertificate=true
+      DB_USER:      ${DB_USER}
+      DB_PASS:      ${DB_PASS}
+      JWT_SECRET:   ${JWT_SECRET}
       CORS_ORIGINS: http://localhost:80,http://tellix-frontend
+    depends_on:
+      - sqlserver
     networks:
       - tellix-net
 
@@ -30,3 +44,6 @@ services:
 networks:
   tellix-net:
     driver: bridge
+
+volumes:
+  sqlserver-data:
