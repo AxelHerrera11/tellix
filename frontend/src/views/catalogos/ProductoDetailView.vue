@@ -221,8 +221,8 @@ onMounted(cargar)
 .info-label { font-size:.75rem; font-weight:500; color:var(--color-text-muted); text-transform:uppercase; letter-spacing:.04em }
 .info-value { font-size:.9rem; font-weight:500 }
 .badge { display:inline-block; padding:2px 10px; border-radius:20px; font-size:.75rem; font-weight:600 }
-.badge--a { background:#d1fae5; color:#065f46 }
-.badge--i { background:#fee2e2; color:#991b1b }
+.badge--a { background:rgba(45,212,160,0.15); color:#2dd4a0 }
+.badge--i { background:rgba(248,113,113,0.15); color:#f87171 }
 .mini-table { width:100%; border-collapse:collapse; font-size:.85rem }
 .mini-table th { text-align:left; font-weight:600; font-size:.75rem; color:var(--color-text-muted); padding:.5rem .5rem .5rem 0; border-bottom:1px solid var(--color-border) }
 .mini-table td { padding:.5rem .5rem .5rem 0; border-bottom:1px solid var(--color-border) }
@@ -232,7 +232,7 @@ onMounted(cargar)
 .precio-form { display:flex; gap:8px; align-items:flex-end; flex-wrap:wrap; margin-bottom:1rem; padding:.75rem; background:var(--color-bg-page); border-radius:8px }
 .field { display:flex; flex-direction:column; gap:4px }
 .label { font-size:.8rem; font-weight:500; color:var(--color-text-secondary) }
-.required { color:#dc2626 }
+.required { color:var(--color-danger) }
 .input { padding:.4rem .6rem; border:1px solid var(--color-border); border-radius:6px; font-size:.85rem; background:var(--color-bg-card); color:var(--color-text); min-width:120px }
 .input:focus { outline:2px solid var(--color-primary); outline-offset:-1px; border-color:transparent }
 .btn { padding:.5rem 1rem; border-radius:8px; font-size:.875rem; font-weight:500; cursor:pointer; border:1px solid transparent; transition:all .15s; text-decoration:none; display:inline-flex; align-items:center; gap:4px }
@@ -249,7 +249,7 @@ onMounted(cargar)
 .switch input { opacity:0; width:0; height:0 }
 .switch-slider { position:absolute; inset:0; background:#cbd5e1; border-radius:20px; cursor:pointer; transition:background .2s }
 .switch-slider::before { content:''; position:absolute; left:2px; top:2px; width:16px; height:16px; background:#fff; border-radius:50%; transition:transform .2s }
-.switch input:checked + .switch-slider { background:#16a34a }
+.switch input:checked + .switch-slider { background:#2dd4a0 }
 .switch input:checked + .switch-slider::before { transform:translateX(16px) }
 .switch--loading { opacity:.5; pointer-events:none }
 </style>

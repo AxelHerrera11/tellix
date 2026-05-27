@@ -216,14 +216,14 @@ function formatNum(n: number) {
 .total-final { font-size:1.1rem; font-weight:700; padding-top:.6rem !important }
 
 .badge { display:inline-block; padding:3px 12px; border-radius:20px; font-size:.75rem; font-weight:600 }
-.badge--a { background:#d1fae5; color:#065f46 }
-.badge--p { background:#fef9c3; color:#713f12 }
-.badge--c { background:#dbeafe; color:#1e40af }
-.badge--x { background:#fee2e2; color:#991b1b }
+.badge--a { background:rgba(45,212,160,0.15); color:#2dd4a0 }
+.badge--p { background:rgba(251,191,36,0.15); color:#fbbf24 }
+.badge--c { background:rgba(96,165,250,0.15); color:#60a5fa }
+.badge--x { background:rgba(248,113,113,0.15); color:#f87171 }
 
 .btn { padding:.5rem 1rem; border-radius:8px; font-size:.875rem; font-weight:500; cursor:pointer; border:1px solid transparent; transition:all .15s; display:inline-flex; align-items:center; gap:4px }
-.btn-danger { background:#dc2626; color:#fff }
-.btn-danger:hover:not(:disabled) { background:#b91c1c }
+.btn-danger { background:rgba(248,113,113,0.2); color:#f87171; border:1px solid rgba(248,113,113,0.3) }
+.btn-danger:hover:not(:disabled) { background:rgba(248,113,113,0.3) }
 .btn-danger:disabled { opacity:.55; cursor:not-allowed }
 .btn-ghost { background:transparent; color:var(--color-text-secondary); border-color:var(--color-border) }
 .btn-ghost:hover { background:var(--color-bg-page) }

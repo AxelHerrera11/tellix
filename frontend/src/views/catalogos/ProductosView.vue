@@ -139,15 +139,15 @@ onMounted(() => { cargarCatalogos(); cargar() })
 .td-actions { width:80px }
 .cell-main { font-weight:500 }
 .badge { display:inline-block; padding:2px 10px; border-radius:20px; font-size:.75rem; font-weight:600 }
-.badge--a { background:#d1fae5; color:#065f46 }
-.badge--i { background:#fee2e2; color:#991b1b }
+.badge--a { background:rgba(45,212,160,0.15); color:#2dd4a0 }
+.badge--i { background:rgba(248,113,113,0.15); color:#f87171 }
 .action-btn { color:var(--color-primary); font-size:.85rem; font-weight:500; text-decoration:none }
 .action-btn:hover { text-decoration:underline }
 .switch { position:relative; display:inline-flex; align-items:center; width:36px; height:20px; margin-right:6px; vertical-align:middle }
 .switch input { opacity:0; width:0; height:0 }
 .switch-slider { position:absolute; inset:0; background:#cbd5e1; border-radius:20px; cursor:pointer; transition:background .2s }
 .switch-slider::before { content:''; position:absolute; left:2px; top:2px; width:16px; height:16px; background:#fff; border-radius:50%; transition:transform .2s }
-.switch input:checked + .switch-slider { background:#16a34a }
+.switch input:checked + .switch-slider { background:#2dd4a0 }
 .switch input:checked + .switch-slider::before { transform:translateX(16px) }
 .switch--loading { opacity:.5; pointer-events:none }
 .btn { padding:.5rem 1rem; border-radius:8px; font-size:.875rem; font-weight:500; cursor:pointer; border:1px solid transparent; transition:all .15s; text-decoration:none; display:inline-flex; align-items:center; gap:4px }
