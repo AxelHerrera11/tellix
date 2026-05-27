@@ -174,7 +174,7 @@ onMounted(() => { cargarCatalogos(); cargarProducto() })
 .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem }
 .field { display:flex; flex-direction:column; gap:4px }
 .label { font-size:.85rem; font-weight:500; color:var(--color-text-secondary) }
-.required { color:#dc2626 }
+.required { color:var(--color-danger) }
 .input { padding:.5rem .75rem; border:1px solid var(--color-border); border-radius:8px; font-size:.875rem; background:var(--color-bg-page); color:var(--color-text) }
 .input:focus { outline:2px solid var(--color-primary); outline-offset:-1px; border-color:transparent }
 .form-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:1.5rem; padding-top:1rem; border-top:1px solid var(--color-border) }

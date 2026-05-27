@@ -217,7 +217,7 @@ onMounted(cargar)
 .td-usuario { font-size:.82rem; color:var(--color-text-muted) }
 .cell-main { font-weight:500 }
 .badge { display:inline-block; padding:2px 10px; border-radius:20px; font-size:.75rem; font-weight:600 }
-.badge--entrada { background:var(--color-success-bg); color:var(--color-success); border:1px solid #bbf7d0 }
+.badge--entrada { background:var(--color-success-bg); color:var(--color-success); border:1px solid rgba(45,212,160,0.3) }
 .badge--salida { background:var(--color-danger-bg); color:var(--color-danger); border:1px solid var(--color-danger-border) }
 .btn { padding:.5rem 1rem; border-radius:8px; font-size:.875rem; font-weight:500; cursor:pointer; border:1px solid transparent; transition:all .15s; text-decoration:none; display:inline-flex; align-items:center; gap:4px }
 .btn-secondary { background:var(--color-bg-card); color:var(--color-text); border-color:var(--color-border) }

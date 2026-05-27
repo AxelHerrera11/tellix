@@ -104,10 +104,10 @@ onMounted(cargar)
 .td-actions { width:80px }
 .cell-main { font-weight:500 }
 .badge { display:inline-block; padding:2px 10px; border-radius:20px; font-size:.75rem; font-weight:600 }
-.badge--a { background:#d1fae5; color:#065f46 }
-.badge--p { background:#fef9c3; color:#713f12 }
-.badge--c { background:#dbeafe; color:#1e40af }
-.badge--x { background:#fee2e2; color:#991b1b }
+.badge--a { background:rgba(45,212,160,0.15); color:#2dd4a0 }
+.badge--p { background:rgba(251,191,36,0.15); color:#fbbf24 }
+.badge--c { background:rgba(96,165,250,0.15); color:#60a5fa }
+.badge--x { background:rgba(248,113,113,0.15); color:#f87171 }
 .action-btn { color:var(--color-primary); font-size:.85rem; font-weight:500; text-decoration:none }
 .action-btn:hover { text-decoration:underline }
 .btn { padding:.5rem 1rem; border-radius:8px; font-size:.875rem; font-weight:500; cursor:pointer; border:1px solid transparent; transition:all .15s; text-decoration:none; display:inline-flex; align-items:center; gap:4px }
