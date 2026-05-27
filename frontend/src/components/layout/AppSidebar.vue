@@ -60,6 +60,13 @@
         <span class="nav-icon">💳</span>
         <span class="nav-label" v-show="ui.sidebarAbierto">CXP</span>
       </router-link>
+      <router-link
+        v-if="auth.tieneRol('ADMINISTRADOR','CONTADOR')"
+        to="/cxp/vencidas" class="nav-item nav-item--sub" active-class="nav-item--active"
+      >
+        <span class="nav-icon">⏳</span>
+        <span class="nav-label" v-show="ui.sidebarAbierto">CXP vencidas</span>
+      </router-link>
 
       <!-- Catálogos: todos -->
       <div class="nav-section" v-show="ui.sidebarAbierto">Catálogos</div>
