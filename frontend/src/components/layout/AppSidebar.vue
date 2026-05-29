@@ -67,6 +67,10 @@
         <span class="nav-icon">🏷</span>
         <span class="nav-label" v-show="ui.sidebarAbierto">Productos</span>
       </router-link>
+      <router-link v-if="auth.tieneRol('ADMINISTRADOR','VENDEDOR','CONTADOR')" to="/precios" class="nav-item nav-item--sub" active-class="nav-item--active">
+        <span class="nav-icon">💲</span>
+        <span class="nav-label" v-show="ui.sidebarAbierto">Precios</span>
+      </router-link>
       <router-link to="/catalogos/clientes"    class="nav-item nav-item--sub" active-class="nav-item--active">
         <span class="nav-icon">👥</span>
         <span class="nav-label" v-show="ui.sidebarAbierto">Clientes</span>
