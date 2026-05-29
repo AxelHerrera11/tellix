@@ -1,4 +1,0 @@
-export const cxcRoutes = [
-    { path: '/cxc', name: 'cxc', component: () => import('@/views/cxc/CxcView.vue'), meta: { titulo: 'Cuentas por cobrar', roles: ['ADMINISTRADOR', 'CONTADOR'] } },
-    { path: '/cxc/vencidas', name: 'cxc-vencidas', component: () => import('@/views/cxc/CxcVencidasView.vue'), meta: { titulo: 'CXC vencidas', roles: ['ADMINISTRADOR', 'CONTADOR'] } }
-];
