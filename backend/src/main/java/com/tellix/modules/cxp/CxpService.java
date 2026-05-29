@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -19,40 +20,30 @@ public class CxpService {
         this.repo = repo;
     }
 
-    public PagedResponse<CxpDto.CxpResumen> listar(String proveedor, String estado, LocalDate desde, LocalDate hasta, Boolean vencidas, int pagina, int tamano) {
-        return repo.listar(proveedor, estado, desde, hasta, vencidas, pagina, tamano);
+    public PagedResponse<CxpDto.CxpResumen> listar(
+        String proveedor, String estado,
+        LocalDate desde, LocalDate hasta,
+        int pagina, int tamano
+    ) {
+        return repo.listar(proveedor, estado, desde, hasta, pagina, tamano);
     }
 
     public CxpDto.CxpDetalle obtener(int id) {
-        return repo.obtener(id).orElseThrow(() -> new RecursoNoEncontradoException("CXP", id));
+        return repo.obtener(id)
+            .orElseThrow(() -> new RecursoNoEncontradoException("Cuenta por pagar", id));
     }
 
     public void registrarPago(int id, CxpDto.RegistrarPagoRequest req) {
-        repo.registrarPago(id, req, usuarioActual().getCodigoUsuario());
+        repo.registrarPago(id, req.monto(), usuarioActual().getCodigoUsuario(), req.descripcion());
     }
 
     public void anular(int id, CxpDto.AnularCxpRequest req) {
-        repo.anular(id, usuarioActual().getCodigoUsuario(), req != null ? req.motivo() : null);
+        repo.anular(id, usuarioActual().getCodigoUsuario(),
+            req != null ? req.motivo() : null);
     }
 
-    public List<CxpDto.CxpResumen> vencidas(LocalDate fecha) {
-        return repo.vencidas(fecha);
-    }
-
-    public CxpDto.CxpResumenFinanciero resumen() {
-        return repo.resumen();
-    }
-
-    public int generarDesdeCompra(int compraId) {
-        return repo.generarDesdeCompra(compraId);
-    }
-
-    public List<CxpDto.MetodoPagoDto> listarMetodosPago() {
-        return repo.listarMetodosPago();
-    }
-
-    public List<CxpDto.CuentaBancariaDto> listarCuentasBancarias() {
-        return repo.listarCuentasBancarias();
+    public List<CxpDto.CxpVencida> reporteVencidas(LocalDate fecha) {
+        return repo.reporteVencidas(fecha);
     }
 
     private TellixUserDetails usuarioActual() {

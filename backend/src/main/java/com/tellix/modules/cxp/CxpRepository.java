@@ -20,18 +20,21 @@ public class CxpRepository {
         this.jdbc = jdbc;
     }
 
-    public PagedResponse<CxpDto.CxpResumen> listar(String proveedor, String estado, LocalDate desde, LocalDate hasta, Boolean vencidas, int pagina, int tamano) {
+    public PagedResponse<CxpDto.CxpResumen> listar(
+        String proveedor, String estado,
+        LocalDate desde, LocalDate hasta,
+        int pagina, int tamano
+    ) {
         return jdbc.execute((Connection con) -> {
             try (CallableStatement cs = con.prepareCall(
-                "EXEC sp_listar_cxp @p_proveedor=?, @p_estado=?, @p_fecha_desde=?, @p_fecha_hasta=?, @p_vencidas=?, @p_pagina=?, @p_tamano=?"
+                "EXEC sp_listar_cxp @p_proveedor=?, @p_estado=?, @p_fecha_desde=?, @p_fecha_hasta=?, @p_pagina=?, @p_tamano=?"
             )) {
                 cs.setString(1, proveedor);
                 cs.setString(2, estado);
-                cs.setDate(3, desde != null ? Date.valueOf(desde) : null);
-                cs.setDate(4, hasta != null ? Date.valueOf(hasta) : null);
-                cs.setBoolean(5, Boolean.TRUE.equals(vencidas));
-                cs.setInt(6, pagina);
-                cs.setInt(7, tamano);
+                cs.setDate(3,   desde != null ? Date.valueOf(desde) : null);
+                cs.setDate(4,   hasta != null ? Date.valueOf(hasta) : null);
+                cs.setInt(5, pagina);
+                cs.setInt(6, tamano);
 
                 long total = 0;
                 List<CxpDto.CxpResumen> datos = new ArrayList<>();
@@ -54,158 +57,100 @@ public class CxpRepository {
 
     public Optional<CxpDto.CxpDetalle> obtener(int id) {
         return jdbc.execute((Connection con) -> {
-            try (CallableStatement cs = con.prepareCall("EXEC sp_obtener_cxp @p_id=?")) {
+            try (CallableStatement cs = con.prepareCall(
+                "EXEC sp_obtener_cxp @p_id=?"
+            )) {
                 cs.setInt(1, id);
 
-                CxpDto.CxpDetalle detalle = null;
-                List<CxpDto.MovimientoPago> movimientos = new ArrayList<>();
+                CxpDto.CxpDetalle cabecera = null;
+                List<CxpDto.DetalleCompra> items = new ArrayList<>();
 
                 boolean hasResult = cs.execute();
                 if (hasResult) {
                     try (ResultSet rs = cs.getResultSet()) {
-                        if (rs.next()) detalle = mapDetalle(rs);
+                        if (rs.next()) cabecera = mapDetalle(rs);
                     }
                 }
                 if (cs.getMoreResults()) {
                     try (ResultSet rs = cs.getResultSet()) {
-                        while (rs.next()) movimientos.add(mapMovimiento(rs));
+                        while (rs.next()) items.add(mapItem(rs));
                     }
                 }
 
-                if (detalle == null) return Optional.empty();
+                if (cabecera == null) return Optional.empty();
 
-                return Optional.of(new CxpDto.CxpDetalle(
-                    detalle.id(), detalle.fkCompra(), detalle.noDocumento(), detalle.fkProveedor(), detalle.proveedor(),
-                    detalle.direccionFiscal(), detalle.fechaOperacion(), detalle.fechaLimite(), detalle.estado(), detalle.estadoDescripcion(),
-                    detalle.valorTotal(), detalle.valorPagado(), detalle.saldo(), detalle.pagada(), detalle.vencida(),
-                    detalle.fkMetodoPago(), detalle.metodoPago(), detalle.fkCuenta(), detalle.fkBanco(), detalle.banco(), detalle.creadoEn(), movimientos
-                ));
+                CxpDto.CxpDetalle completa = new CxpDto.CxpDetalle(
+                    cabecera.id(), cabecera.fkCompra(), cabecera.noDocumento(),
+                    cabecera.proveedorNit(), cabecera.proveedor(),
+                    cabecera.proveedorDireccion(),
+                    cabecera.estado(), estadoDesc(cabecera.estado()),
+                    cabecera.valorTotal(), cabecera.valorPagado(), cabecera.saldo(),
+                    cabecera.fechaLimite(), cabecera.fkMetodoPago(), cabecera.metodoPago(),
+                    cabecera.fkCuenta(), cabecera.cuentaNumero(), cabecera.banco(),
+                    cabecera.fechaCompra(), cabecera.compraSubtotal(),
+                    cabecera.compraDescuentos(), cabecera.compraImpuestos(),
+                    cabecera.compraTotal(), cabecera.usuario(), cabecera.nombreEmpleado(),
+                    cabecera.creadoEn(), cabecera.actualizadoEn(), items
+                );
+                return Optional.of(completa);
             }
         });
     }
 
-    public void registrarPago(int id, CxpDto.RegistrarPagoRequest req, int usuario) {
+    public void registrarPago(int id, java.math.BigDecimal monto, int fkUsuario, String descripcion) {
         jdbc.execute((Connection con) -> {
             try (CallableStatement cs = con.prepareCall(
-                "EXEC sp_registrar_pago_cxp @p_cxp_id=?, @p_monto=?, @p_metodo_pago=?, @p_cuenta=?, @p_usuario=?, @p_descripcion=?"
+                "EXEC sp_registrar_pago_cxp @p_id=?, @p_monto=?, @p_usuario=?, @p_descripcion=?"
             )) {
                 cs.setInt(1, id);
-                cs.setBigDecimal(2, req.monto());
-                cs.setInt(3, req.fkMetodoPago());
-                cs.setString(4, req.fkCuenta());
-                cs.setInt(5, usuario);
-                cs.setString(6, req.descripcion());
+                cs.setBigDecimal(2, monto);
+                cs.setInt(3, fkUsuario);
+                cs.setString(4, descripcion);
                 cs.execute();
                 return null;
             }
         });
     }
 
-    public void anular(int id, int usuario, String motivo) {
+    public void anular(int id, int fkUsuario, String motivo) {
         jdbc.execute((Connection con) -> {
-            try (CallableStatement cs = con.prepareCall("EXEC sp_anular_cxp @p_cxp_id=?, @p_usuario=?, @p_motivo=?")) {
+            try (CallableStatement cs = con.prepareCall(
+                "EXEC sp_anular_cxp @p_id=?, @p_usuario=?, @p_motivo=?"
+            )) {
                 cs.setInt(1, id);
-                cs.setInt(2, usuario);
-                cs.setString(3, motivo);
+                cs.setInt(2, fkUsuario);
+                cs.setString(3, motivo != null ? motivo : "Anulación manual");
                 cs.execute();
                 return null;
             }
         });
     }
 
-    public List<CxpDto.CxpResumen> vencidas(LocalDate fecha) {
+    public List<CxpDto.CxpVencida> reporteVencidas(LocalDate fecha) {
         return jdbc.execute((Connection con) -> {
-            try (CallableStatement cs = con.prepareCall("EXEC sp_reporte_cxp_vencidas @p_fecha=?")) {
+            try (CallableStatement cs = con.prepareCall(
+                "EXEC sp_reporte_cxp_vencidas @p_fecha=?"
+            )) {
                 cs.setDate(1, fecha != null ? Date.valueOf(fecha) : null);
-                List<CxpDto.CxpResumen> lista = new ArrayList<>();
 
+                List<CxpDto.CxpVencida> lista = new ArrayList<>();
                 boolean hasResult = cs.execute();
                 while (true) {
                     if (hasResult) {
                         try (ResultSet rs = cs.getResultSet()) {
-                            while (rs.next()) lista.add(mapResumen(rs));
-                        }
-                        break;
-                    }
-                    int uc = cs.getUpdateCount();
-                    if (!hasResult && uc == -1) break;
-                    hasResult = cs.getMoreResults();
-                }
-                return lista;
-            }
-        });
-    }
-
-    public CxpDto.CxpResumenFinanciero resumen() {
-        return jdbc.execute((Connection con) -> {
-            try (CallableStatement cs = con.prepareCall("EXEC sp_resumen_cxp")) {
-                boolean hasResult = cs.execute();
-                while (true) {
-                    if (hasResult) {
-                        try (ResultSet rs = cs.getResultSet()) {
-                            if (rs.next()) {
-                                return new CxpDto.CxpResumenFinanciero(
-                                    rs.getBigDecimal("total_pendiente"),
-                                    rs.getBigDecimal("total_pagado"),
-                                    rs.getBigDecimal("saldo_total"),
-                                    rs.getInt("cuentas_pendientes"),
-                                    rs.getInt("cuentas_vencidas"),
-                                    rs.getInt("cuentas_pagadas")
-                                );
+                            while (rs.next()) {
+                                lista.add(new CxpDto.CxpVencida(
+                                    rs.getInt("id"),
+                                    rs.getInt("fk_compra"),
+                                    rs.getString("no_documento"),
+                                    rs.getString("proveedor"),
+                                    rs.getBigDecimal("valor_total"),
+                                    rs.getBigDecimal("valor_pagado"),
+                                    rs.getBigDecimal("saldo"),
+                                    toLocalDate(rs.getDate("fecha_limite")),
+                                    rs.getInt("dias_vencida")
+                                ));
                             }
-                        }
-                        break;
-                    }
-                    int uc = cs.getUpdateCount();
-                    if (!hasResult && uc == -1) break;
-                    hasResult = cs.getMoreResults();
-                }
-                return new CxpDto.CxpResumenFinanciero(null, null, null, 0, 0, 0);
-            }
-        });
-    }
-
-    public int generarDesdeCompra(int compraId) {
-        return jdbc.execute((Connection con) -> {
-            try (CallableStatement cs = con.prepareCall("{call sp_generar_cxp_desde_compra(?, ?)}")) {
-                cs.setInt(1, compraId);
-                cs.registerOutParameter(2, Types.INTEGER);
-                cs.execute();
-                return cs.getInt(2);
-            }
-        });
-    }
-
-    public List<CxpDto.MetodoPagoDto> listarMetodosPago() {
-        return jdbc.execute((Connection con) -> {
-            try (CallableStatement cs = con.prepareCall("EXEC sp_listar_metodos_pago_cxp")) {
-                List<CxpDto.MetodoPagoDto> lista = new ArrayList<>();
-                boolean hasResult = cs.execute();
-                while (true) {
-                    if (hasResult) {
-                        try (ResultSet rs = cs.getResultSet()) {
-                            while (rs.next()) lista.add(mapMetodoPago(rs));
-                        }
-                        break;
-                    }
-                    int uc = cs.getUpdateCount();
-                    if (!hasResult && uc == -1) break;
-                    hasResult = cs.getMoreResults();
-                }
-                return lista;
-            }
-        });
-    }
-
-    public List<CxpDto.CuentaBancariaDto> listarCuentasBancarias() {
-        return jdbc.execute((Connection con) -> {
-            try (CallableStatement cs = con.prepareCall("EXEC sp_listar_cuentas_bancarias_cxp")) {
-                List<CxpDto.CuentaBancariaDto> lista = new ArrayList<>();
-                boolean hasResult = cs.execute();
-                while (true) {
-                    if (hasResult) {
-                        try (ResultSet rs = cs.getResultSet()) {
-                            while (rs.next()) lista.add(mapCuentaBancaria(rs));
                         }
                         break;
                     }
@@ -223,22 +168,16 @@ public class CxpRepository {
             rs.getInt("id"),
             rs.getInt("fk_compra"),
             rs.getString("no_documento"),
-            rs.getString("fk_proveedor"),
+            rs.getString("proveedor_nit"),
             rs.getString("proveedor"),
-            toLocalDate(rs.getDate("fecha_operacion")),
-            toLocalDate(rs.getDate("fecha_limite")),
             rs.getString("estado"),
-            rs.getString("estado_descripcion"),
+            estadoDesc(rs.getString("estado")),
             rs.getBigDecimal("valor_total"),
             rs.getBigDecimal("valor_pagado"),
             rs.getBigDecimal("saldo"),
-            rs.getBoolean("pagada"),
-            rs.getBoolean("vencida"),
-            rs.getInt("dias_vencida"),
-            rs.getInt("fk_metodo_pago"),
+            toLocalDate(rs.getDate("fecha_limite")),
             rs.getString("metodo_pago"),
-            rs.getString("fk_cuenta"),
-            rs.getObject("fk_banco", Integer.class),
+            toLocalDate(rs.getDate("fecha_compra")),
             toLocalDateTime(rs.getTimestamp("creado_en"))
         );
     }
@@ -248,53 +187,44 @@ public class CxpRepository {
             rs.getInt("id"),
             rs.getInt("fk_compra"),
             rs.getString("no_documento"),
-            rs.getString("fk_proveedor"),
+            rs.getString("proveedor_nit"),
             rs.getString("proveedor"),
-            rs.getString("direccion_fiscal"),
-            toLocalDate(rs.getDate("fecha_operacion")),
-            toLocalDate(rs.getDate("fecha_limite")),
+            rs.getString("proveedor_direccion"),
             rs.getString("estado"),
-            rs.getString("estado_descripcion"),
+            estadoDesc(rs.getString("estado")),
             rs.getBigDecimal("valor_total"),
             rs.getBigDecimal("valor_pagado"),
             rs.getBigDecimal("saldo"),
-            rs.getBoolean("pagada"),
-            rs.getBoolean("vencida"),
+            toLocalDate(rs.getDate("fecha_limite")),
             rs.getInt("fk_metodo_pago"),
             rs.getString("metodo_pago"),
             rs.getString("fk_cuenta"),
-            rs.getObject("fk_banco", Integer.class),
+            rs.getString("cuenta_numero"),
             rs.getString("banco"),
+            toLocalDate(rs.getDate("fecha_compra")),
+            rs.getBigDecimal("compra_subtotal"),
+            rs.getBigDecimal("compra_descuentos"),
+            rs.getBigDecimal("compra_impuestos"),
+            rs.getBigDecimal("compra_total"),
+            rs.getString("usuario"),
+            rs.getString("nombre_empleado"),
             toLocalDateTime(rs.getTimestamp("creado_en")),
+            toLocalDateTime(rs.getTimestamp("actualizado_en")),
             new ArrayList<>()
         );
     }
 
-    private CxpDto.MovimientoPago mapMovimiento(ResultSet rs) throws SQLException {
-        return new CxpDto.MovimientoPago(
+    private CxpDto.DetalleCompra mapItem(ResultSet rs) throws SQLException {
+        return new CxpDto.DetalleCompra(
             rs.getInt("id"),
-            rs.getString("fk_cuenta"),
-            rs.getString("tipo_documento"),
-            rs.getString("no_documento"),
-            toLocalDate(rs.getDate("fecha_operacion")),
-            rs.getBigDecimal("monto"),
-            rs.getString("descripcion"),
-            rs.getInt("fk_usuario"),
-            rs.getString("usuario")
-        );
-    }
-
-    private CxpDto.MetodoPagoDto mapMetodoPago(ResultSet rs) throws SQLException {
-        return new CxpDto.MetodoPagoDto(rs.getInt("codigo"), rs.getString("descripcion"));
-    }
-
-    private CxpDto.CuentaBancariaDto mapCuentaBancaria(ResultSet rs) throws SQLException {
-        return new CxpDto.CuentaBancariaDto(
-            rs.getString("numero"),
-            rs.getInt("fk_banco"),
-            rs.getString("banco"),
-            rs.getString("titular"),
-            rs.getString("descripcion")
+            rs.getInt("fk_compra"),
+            rs.getInt("fk_producto"),
+            rs.getString("nombre_producto"),
+            rs.getBigDecimal("cantidad"),
+            rs.getBigDecimal("precio_unitario"),
+            rs.getBigDecimal("descuentos"),
+            rs.getBigDecimal("impuestos"),
+            rs.getBigDecimal("subtotal")
         );
     }
 
@@ -304,5 +234,15 @@ public class CxpRepository {
 
     private LocalDateTime toLocalDateTime(Timestamp ts) {
         return ts != null ? ts.toLocalDateTime() : null;
+    }
+
+    private String estadoDesc(String estado) {
+        if (estado == null) return "";
+        return switch (estado) {
+            case "P" -> "Pendiente";
+            case "A" -> "Abonada";
+            case "X" -> "Cancelada";
+            default  -> estado;
+        };
     }
 }
