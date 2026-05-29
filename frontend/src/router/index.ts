@@ -10,7 +10,6 @@ import { cxpRoutes }       from './routes/cxpRoutes'
 import { reporteRoutes }   from './routes/reporteRoutes'
 import { catalogoRoutes }  from './routes/catalogoRoutes'
 import { adminRoutes }     from './routes/adminRoutes'
-import { precioRoutes }    from './routes/precioRoutes'
 import AppLayout from '@/components/layout/AppLayout.vue'
 
 const router = createRouter({
@@ -32,7 +31,6 @@ const router = createRouter({
                 ...cxpRoutes,
                 ...reporteRoutes,
                 ...catalogoRoutes,
-                ...precioRoutes,
                 ...adminRoutes,
             ]
         },
