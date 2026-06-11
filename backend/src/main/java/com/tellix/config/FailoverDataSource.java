@@ -169,6 +169,15 @@ public class FailoverDataSource implements DataSource {
                 log.warn("[HA] No se pudo cambiar a MULTI_USER — la BD ya está operativa: {}", e.getMessage());
             }
 
+            // 4. Re-mapar usuario huérfano — el SID de tellix_app en TellixDB
+            //    difiere del login del servidor tras el restore
+            try {
+                log.info("[HA] Re-mapanado usuario tellix_app en TellixDB...");
+                s.execute("USE [TellixDB]; ALTER USER tellix_app WITH LOGIN = tellix_app;");
+            } catch (SQLException e) {
+                log.warn("[HA] No se pudo re-mapar tellix_app — puede haber usuarios huérfanos: {}", e.getMessage());
+            }
+
             log.info("[HA] BD secundaria promovida exitosamente (RESTORE WITH RECOVERY)");
 
         } catch (SQLException e) {
