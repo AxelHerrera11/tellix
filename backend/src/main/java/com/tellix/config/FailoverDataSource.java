@@ -143,7 +143,17 @@ public class FailoverDataSource implements DataSource {
         try (Connection c = DriverManager.getConnection(adminUrl, props.getUsername(), props.getPassword());
              Statement  s = c.createStatement()) {
 
-            // Forzar desconexión de cualquier conexión activa y restaurar
+            // 1. Deshabilitar jobs de Log Shipping en PC3 para que no intenten
+            //    seguir restaurando después de abrir la base
+            log.info("[HA] Deshabilitando jobs de Log Shipping en PC3...");
+            s.execute("""
+                USE msdb;
+                UPDATE msdb.dbo.sysjobs
+                SET enabled = 0
+                WHERE name LIKE 'LS%TellixDB%';
+                """);
+
+            // 2. Forzar desconexión de cualquier conexión activa y restaurar
             s.execute("""
                 ALTER DATABASE [TellixDB] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
                 RESTORE DATABASE [TellixDB] WITH RECOVERY;
