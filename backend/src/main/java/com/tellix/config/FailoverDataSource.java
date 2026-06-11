@@ -158,12 +158,16 @@ public class FailoverDataSource implements DataSource {
                 log.warn("[HA] No se pudieron deshabilitar jobs de Log Shipping — continuando failover: {}", e.getMessage());
             }
 
-            // 2. Forzar desconexión de cualquier conexión activa y restaurar
-            s.execute("""
-                ALTER DATABASE [TellixDB] SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
-                RESTORE DATABASE [TellixDB] WITH RECOVERY;
-                ALTER DATABASE [TellixDB] SET MULTI_USER;
-                """);
+            // 2. Restaurar BD para traerla ONLINE (no se puede ALTER en estado RESTORING)
+            log.info("[HA] Ejecutando RESTORE WITH RECOVERY en TellixDB...");
+            s.execute("RESTORE DATABASE [TellixDB] WITH RECOVERY;");
+
+            // 3. Forzar modo multi-usuario (opcional, por si había conexiones previas)
+            try {
+                s.execute("ALTER DATABASE [TellixDB] SET MULTI_USER;");
+            } catch (SQLException e) {
+                log.warn("[HA] No se pudo cambiar a MULTI_USER — la BD ya está operativa: {}", e.getMessage());
+            }
 
             log.info("[HA] BD secundaria promovida exitosamente (RESTORE WITH RECOVERY)");
 
