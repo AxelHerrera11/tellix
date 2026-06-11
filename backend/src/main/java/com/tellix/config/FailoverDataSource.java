@@ -145,13 +145,18 @@ public class FailoverDataSource implements DataSource {
 
             // 1. Deshabilitar jobs de Log Shipping en PC3 para que no intenten
             //    seguir restaurando después de abrir la base
-            log.info("[HA] Deshabilitando jobs de Log Shipping en PC3...");
-            s.execute("""
-                USE msdb;
-                UPDATE msdb.dbo.sysjobs
-                SET enabled = 0
-                WHERE name LIKE 'LS%TellixDB%';
-                """);
+            //    (tolerante a falta de permisos en msdb)
+            try {
+                log.info("[HA] Deshabilitando jobs de Log Shipping en PC3...");
+                s.execute("""
+                    USE msdb;
+                    UPDATE msdb.dbo.sysjobs
+                    SET enabled = 0
+                    WHERE name LIKE 'LS%TellixDB%';
+                    """);
+            } catch (SQLException e) {
+                log.warn("[HA] No se pudieron deshabilitar jobs de Log Shipping — continuando failover: {}", e.getMessage());
+            }
 
             // 2. Forzar desconexión de cualquier conexión activa y restaurar
             s.execute("""
