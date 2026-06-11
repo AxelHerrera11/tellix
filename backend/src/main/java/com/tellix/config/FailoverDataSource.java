@@ -117,7 +117,7 @@ public class FailoverDataSource implements DataSource {
 
         try {
             promoteSecondary();
-            secondaryPool.evictAllConnections(); // Limpiar conexiones viejas
+            secondaryPool.getHikariPoolMXBean().softEvictConnections(); // Limpiar conexiones viejas
             usingPrimary.set(false);
             consecutiveFailures.set(0);
             log.info("[HA] Failover completado. App conectada a secundario: {}", props.getSecondaryUrl());
@@ -181,7 +181,7 @@ public class FailoverDataSource implements DataSource {
             log.info("[HA] PRIMARIO RECUPERADO — Volviendo a PC2...");
             log.info("[HA] ══════════════════════════════════════════════════");
 
-            primaryPool.evictAllConnections();
+            primaryPool.getHikariPoolMXBean().softEvictConnections();
             usingPrimary.set(true);
             consecutiveFailures.set(0);
             log.info("[HA] Recuperación completada. App conectada a primario: {}", props.getPrimaryUrl());
