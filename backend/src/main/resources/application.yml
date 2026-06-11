@@ -35,6 +35,8 @@ tellix:
     secondary-url: ${DB_SECONDARY_URL:jdbc:sqlserver://100.90.132.63:1433;databaseName=TellixDB;encrypt=true;trustServerCertificate=true}
     username:      ${DB_USER:tellix_app}
     password:      ${DB_PASS:C4mbi4M3!Pr0nt0}
+    admin-user:    ${HA_ADMIN_USER:sa}
+    admin-pass:    ${HA_ADMIN_PASS}
     check-interval-ms: 10000   # Health-check cada 10 segundos
     failure-threshold: 3       # 3 fallos consecutivos (≈ 30s) → failover
 

@@ -140,7 +140,7 @@ public class FailoverDataSource implements DataSource {
 
         log.info("[HA] Conectando a master de PC3 para promover BD...");
 
-        try (Connection c = DriverManager.getConnection(adminUrl, props.getUsername(), props.getPassword());
+        try (Connection c = DriverManager.getConnection(adminUrl, props.getAdminUser(), props.getAdminPass());
              Statement  s = c.createStatement()) {
 
             // 1. Deshabilitar jobs de Log Shipping en PC3 para que no intenten

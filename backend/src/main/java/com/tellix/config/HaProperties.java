@@ -21,6 +21,12 @@ public class HaProperties {
     /** Contraseña SQL Server compartida por ambas instancias */
     private String password;
 
+    /** Usuario administrador (sa) para operaciones de failover como RESTORE */
+    private String adminUser;
+
+    /** Contraseña del usuario administrador */
+    private String adminPass;
+
     /**
      * Intervalo en milisegundos entre cada health-check.
      * Por defecto: 10 000 ms (10 segundos).
@@ -52,4 +58,10 @@ public class HaProperties {
 
     public int  getFailureThreshold()           { return failureThreshold; }
     public void setFailureThreshold(int v)      { this.failureThreshold = v; }
+
+    public String getAdminUser()                { return adminUser; }
+    public void   setAdminUser(String v)        { this.adminUser = v; }
+
+    public String getAdminPass()                { return adminPass; }
+    public void   setAdminPass(String v)        { this.adminPass = v; }
 }
